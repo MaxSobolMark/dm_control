@@ -165,10 +165,15 @@ class PlanarWalker(base.Task):
         if self._move_speed == 0:
             return stand_reward
         else:
-            move_reward = rewards.tolerance(physics.horizontal_velocity(),
-                                            bounds=(self._move_speed,
+            horizontal_velocity = physics.horizontal_velocity()
+            target_speed = self._move_speed
+            if self._move_speed < 0:
+                horizontal_velocity = -horizontal_velocity
+                target_speed = -target_speed
+            move_reward = rewards.tolerance(horizontal_velocity,
+                                            bounds=(target_speed,
                                                     float('inf')),
-                                            margin=self._move_speed / 2,
+                                            margin=target_speed / 2,
                                             value_at_margin=0.5,
                                             sigmoid='linear')
             return stand_reward * (5 * move_reward + 1) / 6
